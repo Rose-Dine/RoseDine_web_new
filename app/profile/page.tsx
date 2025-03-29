@@ -238,7 +238,7 @@ export default function ProfilePage() {
           <Button variant="ghost" onClick={() => router.back()} className="hover:bg-primary/10">
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <h1 className="text-3xl font-bold">Profile Settings</h1>
+          <h1 className="text-3xl font-bold">Recommendation Settings</h1>
           <Button variant="outline" onClick={handleSignOut} className="ml-auto">
             <LogOut className="h-4 w-4 mr-2" />
             Sign Out
