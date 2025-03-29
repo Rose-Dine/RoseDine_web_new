@@ -117,16 +117,16 @@ class ApiClient {
       method: 'POST',
       body: JSON.stringify(data),
     });
-    
-    if (response.error) return response;
-    
-    // Extract token from the success message
-    const message = response.data as string;
+  
+    if (response.error) return { error: response.error };
+  
+    const message = response.data || '';
     const tokenMatch = message.match(/Token: (.*)/);
     const token = tokenMatch ? tokenMatch[1] : '';
-    
+  
     return { data: { token } };
   }
+  
 
   static async verifyEmail(data: {
     token: string;
@@ -136,16 +136,20 @@ class ApiClient {
     email: string;
     password: string;
   }): Promise<ApiResponse<void>> {
-    return this.request<void>('/api/users/verify-email', {
+    const response = await this.request<string>('/api/users/verify-email', {
       method: 'POST',
       body: JSON.stringify(data),
-    }).then(response => {
-      if (response.data === 'Email verified successfully and user created') {
-        return { data: undefined };
-      }
-      return response;
     });
+  
+    if (response.error) return { error: response.error };
+  
+    if (response.data === 'Email verified successfully and user created') {
+      return { data: undefined };
+    }
+  
+    return { error: 'Unexpected response from server' };
   }
+  
 
   static async getMenuItems(date: string, type: string): Promise<ApiResponse<MenuItem[]>> {
     return this.request<MenuItem[]>(`/api/menu-items?date=${date}&type=${type}`);
