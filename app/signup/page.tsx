@@ -93,10 +93,10 @@ export default function SignupPage() {
               />
             </div>
             {error && <p className="text-destructive text-sm">{error}</p>}
-            <Button type="submit" className="w-full" disabled={isLoading}>
+            <Button type="submit" className="w-full h-12 text-base" disabled={isLoading}>
               {isLoading ? (
                 <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                   Verifying...
                 </>
               ) : (
@@ -113,7 +113,11 @@ export default function SignupPage() {
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <Card className="w-full max-w-md p-6 space-y-6">
         <div className="flex justify-center mb-4">
-          <img src="/logo.jpg" alt="RoseDine Logo" className="h-24 w-auto" />
+          <img 
+            src="/logo.jpg" 
+            alt="RoseDine Logo" 
+            className="h-54 w-auto rounded-full object-cover shadow-md" 
+          />
         </div>
         <div className="space-y-2 text-center">
           <h1 className="text-3xl font-bold">Create Account</h1>
@@ -161,10 +165,10 @@ export default function SignupPage() {
             />
           </div>
           {error && <p className="text-destructive text-sm">{error}</p>}
-          <Button type="submit" className="w-full" disabled={isLoading}>
+          <Button type="submit" className="w-full h-12 text-base" disabled={isLoading}>
             {isLoading ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                 Creating Account...
               </>
             ) : (
@@ -182,3 +186,4 @@ export default function SignupPage() {
     </div>
   );
 }
+
