@@ -1,7 +1,6 @@
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+// This file is intentionally empty to avoid middleware errors with static export
 
-// Remove middleware since we're using static export
+// Empty config with no matchers prevents middleware from running on any routes
 export const config = {
-  matcher: '/api/:path*',
-}
+  matcher: [],
+};

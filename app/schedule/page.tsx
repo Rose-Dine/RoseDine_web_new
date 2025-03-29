@@ -13,6 +13,17 @@ import { Loader2, UserCircle2, Mail } from "lucide-react";
 import Link from "next/link";
 import { zonedTimeToUtc, utcToZonedTime } from 'date-fns-tz';
 
+// Import MenuItem interface from the MenuItems component
+import type { MenuItem } from "@/components/menu-items";
+
+interface Recommendation {
+  item: MenuItem;
+  totalProtein: number;
+  totalCarbs: number;
+  totalFats: number;
+  totalCalories: number;
+}
+
 interface RecommendationTotalsProps {
   totals: {
     totalProtein: number;
@@ -52,8 +63,8 @@ export default function SchedulePage() {
   const router = useRouter();
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedMealType, setSelectedMealType] = useState("");
-  const [menuItems, setMenuItems] = useState([]);
-  const [recommendations, setRecommendations] = useState<any[]>([]);
+  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+  const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const [cafeteriaStatus, setCafeteriaStatus] = useState({ isOpen: false, hours: "" });
@@ -127,7 +138,11 @@ export default function SchedulePage() {
   };
 
   useEffect(() => {
-    const userData = localStorage.getItem("userData");
+    // Check both localStorage and sessionStorage for user data
+    const localUserData = localStorage.getItem("userData");
+    const sessionUserData = sessionStorage.getItem("userData");
+    const userData = localUserData || sessionUserData;
+    
     if (!userData) {
       router.push("/login");
       return;
@@ -172,7 +187,11 @@ export default function SchedulePage() {
       setIsLoading(true);
       setError("");
 
-      const userData = localStorage.getItem("userData");
+      // Check both localStorage and sessionStorage for user data
+      const localUserData = localStorage.getItem("userData");
+      const sessionUserData = sessionStorage.getItem("userData");
+      const userData = localUserData || sessionUserData;
+      
       if (!userData) return;
       const { id: userId } = JSON.parse(userData);
 

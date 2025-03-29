@@ -1,8 +1,24 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function Home() {
+  const router = useRouter();
+
+  useEffect(() => {
+    // Check if user is already logged in (either in localStorage or sessionStorage)
+    const localUserData = localStorage.getItem("userData");
+    const sessionUserData = sessionStorage.getItem("userData");
+    
+    if (localUserData || sessionUserData) {
+      // User is logged in, redirect to schedule page
+      router.push("/schedule");
+    }
+  }, [router]);
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <Card className="w-full max-w-md p-6 space-y-6">

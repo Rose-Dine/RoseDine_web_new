@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import Link from "next/link";
 import { ApiClient } from "@/lib/api-client";
 import { Loader2 } from "lucide-react";
@@ -14,6 +15,7 @@ export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(true);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -27,12 +29,23 @@ export default function LoginPage() {
       if (response.error) {
         setError(response.error);
       } else {
-        // Store both userId and a login timestamp
+        // Store user data with remember me preference
         const userData = {
           id: response.data!,
-          loginTime: new Date().toISOString()
+          loginTime: new Date().toISOString(),
+          rememberMe: rememberMe
         };
-        localStorage.setItem("userData", JSON.stringify(userData));
+        
+        if (rememberMe) {
+          // Store in localStorage for persistent login
+          localStorage.setItem("userData", JSON.stringify(userData));
+        } else {
+          // Store in sessionStorage for session-only login
+          sessionStorage.setItem("userData", JSON.stringify(userData));
+          // Clear any existing localStorage data
+          localStorage.removeItem("userData");
+        }
+        
         router.push("/schedule");
       }
     } catch (err) {
@@ -78,6 +91,16 @@ export default function LoginPage() {
               onChange={(e) => setPassword(e.target.value)}
               required
             />
+          </div>
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="rememberMe"
+              checked={rememberMe}
+              onCheckedChange={(checked) => setRememberMe(checked as boolean)}
+            />
+            <Label htmlFor="rememberMe" className="text-sm font-normal cursor-pointer">
+              Remember me
+            </Label>
           </div>
           {error && <p className="text-destructive text-sm">{error}</p>}
           <Button type="submit" className="w-full h-12 text-base" disabled={isLoading}>

@@ -91,7 +91,11 @@ export default function ProfilePage() {
   const [pendingMacros, setPendingMacros] = useState<any>(null);
 
   useEffect(() => {
-    const userData = localStorage.getItem("userData");
+    // Check both localStorage and sessionStorage for user data
+    const localUserData = localStorage.getItem("userData");
+    const sessionUserData = sessionStorage.getItem("userData");
+    const userData = localUserData || sessionUserData;
+    
     if (!userData) {
       router.push("/login");
       return;
@@ -124,7 +128,9 @@ export default function ProfilePage() {
   }, [preferences]);
 
   const handleSignOut = () => {
+    // Clear both localStorage and sessionStorage
     localStorage.removeItem("userData");
+    sessionStorage.removeItem("userData");
     router.push("/login");
   };
 
@@ -138,7 +144,11 @@ export default function ProfilePage() {
   const handleSaveMacros = async () => {
     if (!pendingMacros) return;
     
-    const userData = localStorage.getItem("userData");
+    // Check both localStorage and sessionStorage for user data
+    const localUserData = localStorage.getItem("userData");
+    const sessionUserData = sessionStorage.getItem("userData");
+    const userData = localUserData || sessionUserData;
+    
     if (!userData) return;
     const { id: userId } = JSON.parse(userData);
 
@@ -166,7 +176,11 @@ export default function ProfilePage() {
   };
 
   const handleDietaryUpdate = async (restriction: string, value: boolean) => {
-    const userData = localStorage.getItem("userData");
+    // Check both localStorage and sessionStorage for user data
+    const localUserData = localStorage.getItem("userData");
+    const sessionUserData = sessionStorage.getItem("userData");
+    const userData = localUserData || sessionUserData;
+    
     if (!userData) return;
     const { id: userId } = JSON.parse(userData);
 
@@ -185,7 +199,11 @@ export default function ProfilePage() {
   };
 
   const handleMacroUpdate = async (mealType: string, macroName: string, value: number) => {
-    const userData = localStorage.getItem("userData");
+    // Check both localStorage and sessionStorage for user data
+    const localUserData = localStorage.getItem("userData");
+    const sessionUserData = sessionStorage.getItem("userData");
+    const userData = localUserData || sessionUserData;
+    
     if (!userData) return;
     const { id: userId } = JSON.parse(userData);
 

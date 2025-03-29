@@ -8,7 +8,7 @@ import { ApiClient } from "@/lib/api-client";
 import { Star, Loader2 } from "lucide-react";
 import { Logger } from "@/lib/logger";
 
-interface MenuItem {
+export interface MenuItem {
   id: number;
   name: string;
   protein: number;
@@ -39,15 +39,17 @@ function getImageForFood(item: MenuItem): string {
   return foodImages.default;
 }
 
-function StarRating({ 
-  rating, 
-  onRate, 
+function StarRating({
+  rating,
+  onRate,
+  onBlur,
   readOnly = false,
   loading = false,
   className = ""
-}: { 
-  rating: number; 
+}: {
+  rating: number;
   onRate?: (rating: number) => void;
+  onBlur?: () => void;
   readOnly?: boolean;
   loading?: boolean;
   className?: string;
@@ -82,15 +84,23 @@ export function MenuItems({ items }: MenuItemsProps) {
   const [pendingRating, setPendingRating] = useState<Record<number, number>>({});
 
   useEffect(() => {
-    const userId = localStorage.getItem("userId");
-    if (!userId) return;
+    // Check both localStorage and sessionStorage for user data
+    const localUserData = localStorage.getItem("userData");
+    const sessionUserData = sessionStorage.getItem("userData");
+    const userData = localUserData || sessionUserData;
+    
+    if (!userData) return;
+    
+    const { id: userId } = JSON.parse(userData);
 
     // Fetch initial user ratings for all items
     items.forEach(async (item) => {
       try {
         const response = await ApiClient.getUserRating(userId, item.id);
         if (!response.error && response.data !== undefined) {
-          setUserRatings(prev => ({ ...prev, [item.id]: response.data }));
+          // Ensure we're only assigning a number to the record
+          const rating = response.data;
+          setUserRatings(prev => ({ ...prev, [item.id]: rating }));
         }
       } catch (error) {
         Logger.error(`Failed to fetch rating for item ${item.id}:`, error);
@@ -99,8 +109,14 @@ export function MenuItems({ items }: MenuItemsProps) {
   }, [items]);
 
   const handleRating = async (itemId: number, rating: number) => {
-    const userId = localStorage.getItem("userId");
-    if (!userId) return;
+    // Check both localStorage and sessionStorage for user data
+    const localUserData = localStorage.getItem("userData");
+    const sessionUserData = sessionStorage.getItem("userData");
+    const userData = localUserData || sessionUserData;
+    
+    if (!userData) return;
+    
+    const { id: userId } = JSON.parse(userData);
 
     setLoading(prev => ({ ...prev, [itemId]: true }));
     
@@ -112,14 +128,22 @@ export function MenuItems({ items }: MenuItemsProps) {
       
       if (response.error) {
         // Revert the optimistic update if there's an error
-        setUserRatings(prev => ({ ...prev, [itemId]: prev[itemId] }));
+        setUserRatings(prev => {
+          // Ensure we're only assigning a number to the record
+          const prevRating = prev[itemId] ?? 0; // Default to 0 if undefined
+          return { ...prev, [itemId]: prevRating };
+        });
         Logger.error(`Failed to submit rating for item ${itemId}:`, response.error);
       } else {
         Logger.info(`Successfully rated item ${itemId} with ${rating} stars`);
       }
     } catch (error) {
       // Revert the optimistic update on error
-      setUserRatings(prev => ({ ...prev, [itemId]: prev[itemId] }));
+      setUserRatings(prev => {
+        // Ensure we're only assigning a number to the record
+        const prevRating = prev[itemId] ?? 0; // Default to 0 if undefined
+        return { ...prev, [itemId]: prevRating };
+      });
       Logger.error(`Error submitting rating for item ${itemId}:`, error);
     } finally {
       setLoading(prev => ({ ...prev, [itemId]: false }));
