@@ -140,13 +140,17 @@ class ApiClient {
       method: 'POST',
       body: JSON.stringify(data),
     });
-  
+
     if (response.error) return { error: response.error };
-  
-    if (response.data === 'Email verified successfully and user created') {
+
+    // Check for success in the response string
+    const successData = response.data || '';
+    if (typeof successData === 'string' && 
+        (successData.includes('verified successfully') || 
+         successData.includes('user created'))) {
       return { data: undefined };
     }
-  
+
     return { error: 'Unexpected response from server' };
   }
   
